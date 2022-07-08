@@ -1,0 +1,6 @@
+# Add Git tag
+- git tag -a v$VERSION -m "Version $VERSION"
+- git tag -a "v0.0.3" -m "First release of iam module"
+
+# Push Git tag to remote
+- git push --follow-tags

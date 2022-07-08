@@ -47,20 +47,30 @@ resource "aws_launch_configuration" "web_launch_configuration" {
 }
 
 resource "aws_autoscaling_group" "web_asg" {
-    launch_configuration = aws_launch_configuration.web_launch_configuration.name
-    vpc_zone_identifier = data.aws_subnets.default.ids
+  launch_configuration = aws_launch_configuration.web_launch_configuration.name
+  vpc_zone_identifier = data.aws_subnets.default.ids
 
-    target_group_arns = [aws_lb_target_group.asg.arn]
-    health_check_type = "ELB"
+  target_group_arns = [aws_lb_target_group.asg.arn]
+  health_check_type = "ELB"
 
-    min_size = var.min_size
-    max_size = var.max_size
-    
-    tag {
+  min_size = var.min_size
+  max_size = var.max_size
+  
+  tag {
         key = "Name"
         value = "${var.cluster_name}-asg"
         propagate_at_launch = true
-        }
+      }
+
+  dynamic "tag" {
+    for_each = var.custom_tags
+
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
+  }
 }
 
 resource "aws_security_group" "web_sg" {
